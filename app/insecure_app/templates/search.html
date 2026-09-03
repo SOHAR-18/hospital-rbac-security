@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="mb-4">Search Patients</h4>
+<div class="card p-4 mb-4">
+    <form method="POST" class="d-flex gap-2">
+        <input type="text" name="name" class="form-control" placeholder="Enter patient name..." value="{{ search_term }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+{% if results %}
+<div class="card p-3">
+<table class="table table-hover mb-0">
+    <thead><tr><th>ID</th><th>Name</th><th>DOB</th><th>Phone</th><th>Address</th></tr></thead>
+    <tbody>
+    {% for p in results %}
+        <tr>
+            <td>{{ p.patient_id }}</td><td>{{ p.full_name }}</td><td>{{ p.dob }}</td>
+            <td>{{ p.phone }}</td><td>{{ p.address }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}
