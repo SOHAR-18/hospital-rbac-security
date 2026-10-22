@@ -6,11 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_connection():
-    """
-    INSECURE VERSION: always connects as the postgres superuser.
-    This means the database itself places NO limits on what any
-    logged-in app user can query -- all control is (weakly) in Python.
-    """
     conn = psycopg2.connect(
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT"),
@@ -23,7 +18,10 @@ def get_connection():
 def query(sql, params=None, fetch=True):
     conn = get_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute(sql, params or ())
+    if params is not None:
+        cur.execute(sql, params)
+    else:
+        cur.execute(sql)
     result = cur.fetchall() if fetch else None
     conn.commit()
     cur.close()
