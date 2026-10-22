@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="mb-4">Billing</h4>
+<div class="card p-3">
+<table class="table table-hover mb-0">
+    <thead><tr><th>Bill ID</th><th>Patient</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+    {% for b in bills %}
+        <tr>
+            <td>{{ b.bill_id }}</td>
+            <td>{{ b.patient_name }}</td>
+            <td>₹{{ b.amount }}</td>
+            <td><span class="badge {{ 'bg-success' if b.status == 'paid' else 'bg-warning text-dark' }}">{{ b.status }}</span></td>
+            <td>{{ b.billed_date.strftime('%Y-%m-%d') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
