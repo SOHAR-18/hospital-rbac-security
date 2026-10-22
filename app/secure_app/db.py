@@ -71,6 +71,24 @@ def auth_query(sql, params=None):
     return result
 
 
+def log_event(username, action, table_name, success, detail=""):
+    """
+    Writes a row to audit_log using the auth role (it has INSERT
+    rights on audit_log from Phase 7's setup script). Used to
+    record both successful and DENIED access attempts.
+    """
+    conn = get_auth_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """INSERT INTO audit_log (username, action, table_name, success, detail)
+           VALUES (%s, %s, %s, %s, %s)""",
+        (username, action, table_name, success, detail),
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 def role_query(app_role, sql, params=None, doctor_id=None, fetch=True):
     """
     Run a query AS the real PostgreSQL role for this app role.

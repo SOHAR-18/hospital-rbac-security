@@ -3,7 +3,7 @@ import bcrypt
 import psycopg2.errors
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from dotenv import load_dotenv
-from db import auth_query, role_query
+from db import auth_query, role_query, log_event
 
 load_dotenv()
 
@@ -131,6 +131,8 @@ def medical_record_detail(record_id):
             doctor_id=current_doctor_id(),
         )
     except psycopg2.errors.InsufficientPrivilege:
+        log_event(session["username"], "SELECT", "medical_records", False,
+                   f"Denied: tried to view record_id={record_id}")
         flash("Access denied by the database: your role cannot view medical records.", "danger")
         return redirect(url_for("dashboard"))
 
@@ -155,6 +157,8 @@ def medical_records_list():
             doctor_id=current_doctor_id(),
         )
     except psycopg2.errors.InsufficientPrivilege:
+        log_event(session["username"], "SELECT", "medical_records", False,
+                   "Denied: tried to list all medical records")
         flash("Access denied by the database: your role cannot view medical records.", "danger")
         return redirect(url_for("dashboard"))
     return render_template("records_list.html", records=rows)
@@ -175,6 +179,8 @@ def billing():
             doctor_id=current_doctor_id(),
         )
     except psycopg2.errors.InsufficientPrivilege:
+        log_event(session["username"], "SELECT", "billing", False,
+                   "Denied: tried to view billing")
         flash("Access denied by the database: your role cannot view billing.", "danger")
         return redirect(url_for("dashboard"))
     return render_template("billing.html", bills=rows)
